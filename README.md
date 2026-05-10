@@ -2,6 +2,18 @@
 
 Tauri 2 desktop app for the offline MathTalking CSV editor.
 
+## Downloads
+
+Current unsigned builds from the latest successful GitHub Actions run:
+
+- [macOS universal DMG / app artifact](https://github.com/architectds/minicsv/actions/runs/25637940166/artifacts/6906433438)
+- [Windows installer artifact](https://github.com/architectds/minicsv/actions/runs/25637940166/artifacts/6906442680)
+- [Linux AppImage / deb artifact](https://github.com/architectds/minicsv/actions/runs/25637940166/artifacts/6906442434)
+
+These are GitHub Actions artifacts from commit `250d1d5`; GitHub expires them
+after the artifact retention window. Use the `Desktop Release Builds` workflow
+to rebuild fresh packages.
+
 ## Shape
 
 - Source of truth: `src/index.html`
