@@ -14,12 +14,18 @@ Tauri 2 desktop wrapper for the offline `csv-editor.html` from MathTalking.
 
 ## Local Build
 
+Use Node 18+; CI uses Node 22.
+
 ```powershell
-cargo install tauri-cli --version 2.10.1 --locked
+npm ci
 npm run sync
+npm run check
 npm run dev
 npm run build
 ```
+
+On Windows, run the build from a Visual Studio x64 developer prompt if Cargo
+cannot find the MSVC linker libraries.
 
 ## Mac App Store Path
 
