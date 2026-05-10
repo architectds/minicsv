@@ -10,7 +10,7 @@ const html = fs.readFileSync(indexPath, 'utf8');
 const bridge = fs.readFileSync(bridgePath, 'utf8');
 
 const checks = [
-  ['standalone desktop title', '<title>CSV Editor — MathTalking</title>'],
+  ['standalone desktop title', '<title>miniCSV</title>'],
   ['desktop editor API', 'window.MTCsvEditor'],
   ['desktop open bridge', 'window.MTCsvDesktop?.openFile'],
   ['desktop save bridge', 'window.MTCsvDesktop?.save'],

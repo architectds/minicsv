@@ -1,6 +1,6 @@
-# MathTalking CSV Editor Desktop
+# miniCSV Desktop
 
-Tauri 2 desktop app for the offline MathTalking CSV editor.
+Tauri 2 desktop app for the offline miniCSV editor.
 
 ## Downloads
 
@@ -19,7 +19,7 @@ to rebuild fresh packages.
 - Source of truth: `src/index.html`
 - Native bridge: `src/desktop-bridge.js`
 - App icon source: `asset/app-icon.png` (cropped from `asset/logo.png`)
-- Bundle ID: `com.mathtalking.csveditor`
+- Bundle ID: `com.architectds.minicsv`
 - File associations: `.csv` and `.tsv`
 - File encodings: UTF-8, UTF-8 BOM, UTF-16 LE/BE, Windows-1252, GB18030,
   Big5, Shift_JIS, EUC-KR
@@ -41,9 +41,8 @@ On Windows, run the build from a Visual Studio x64 developer prompt if Cargo
 cannot find the MSVC linker libraries.
 
 `src/index.html` is intentionally checked in as this repo's standalone editor
-page. It was copied from the latest MathTalking `csv-editor.html` and includes
-the large-dataset virtual scrolling / lazy cell editing updates plus the native
-desktop bridge hooks.
+page. It includes large-dataset virtual scrolling / lazy cell editing updates
+plus the native desktop bridge hooks.
 
 ## Direct Download Builds
 
@@ -82,7 +81,7 @@ as a signed `.pkg`, and uploads it to App Store Connect.
 
 ## Apple Portal Checklist
 
-1. Create App ID `com.mathtalking.csveditor`.
+1. Create App ID `com.architectds.minicsv`.
 2. Enable App Sandbox.
 3. Create a Mac App Store Connect provisioning profile for that App ID.
 4. Export an Apple Distribution or 3rd Party Mac Developer Application `.p12`.

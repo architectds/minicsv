@@ -6,8 +6,8 @@
 
   <link rel="icon" href="data:,">
 
-  <title>CSV Editor — MathTalking</title>
-  <meta name="description" content="Edit CSV files in the browser. 100% offline-capable. All data stays on your device.">
+  <title>miniCSV</title>
+  <meta name="description" content="miniCSV edits CSV and TSV files offline. All data stays on your device.">
 
   <!-- Restore theme before paint -->
   <script>
@@ -372,8 +372,8 @@
 <body>
 
   <div class="csv-topbar">
-    <span class="csv-brand">MathTalking</span>
-    <span class="csv-pageTitle"><span data-l10n="pageTitle">CSV Editor</span><span class="filename" id="filename-display"></span></span>
+    <span class="csv-brand">miniCSV</span>
+    <span class="csv-pageTitle"><span class="filename" id="filename-display"></span></span>
     <span class="csv-spacer"></span>
     <select class="csv-language" id="languageSelect" aria-label="Language">
       <option value="en">English</option>
@@ -386,7 +386,7 @@
       <option value="de">Deutsch</option>
       <option value="pt-BR">Português</option>
     </select>
-    <a class="csv-iconBtn" id="downloadOffline" href="" download="csv-editor.html" title="Download offline copy of this page" aria-label="Download offline copy">
+    <a class="csv-iconBtn" id="downloadOffline" href="" download="minicsv.html" title="Download offline copy of this page" aria-label="Download offline copy">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
@@ -512,7 +512,7 @@
   const SUPPORTED_LOCALES = ['en', 'zh', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'pt-BR'];
   const L10N = {
     en: {
-      pageTitle: 'CSV Editor', return: 'Return', language: 'Language',
+      pageTitle: 'miniCSV', return: 'Return', language: 'Language',
       open: 'Open', save: 'Save', saveAs: 'Save As', addColumn: 'Add Column',
       deleteColumn: 'Delete Column', addRow: 'Add Row', deleteRow: 'Delete Row',
       export: 'Export', separator: 'Separator', quote: 'Quote', encoding: 'Encoding', none: 'none',
@@ -865,7 +865,7 @@
 
   function cleanImportUrl() {
     if (!window.history?.replaceState || !window.location.search) return;
-    const clean = window.location.pathname || 'csv-editor.html';
+    const clean = window.location.pathname || 'minicsv.html';
     window.history.replaceState(null, '', clean);
   }
 
@@ -1382,9 +1382,9 @@
   }
 
   function updateTitle() {
-    const dot = state.dirty ? ' • ' : '';
-    filenameDisplay.textContent = state.filename ? ' — ' + state.filename + dot : '';
-    titleEl.textContent = (state.dirty ? '• ' : '') + (state.filename || l10n('pageTitle')) + ' · MathTalking';
+    const dot = state.dirty ? ' *' : '';
+    filenameDisplay.textContent = state.filename ? ' - ' + state.filename + dot : '';
+    titleEl.textContent = (state.dirty ? '* ' : '') + (state.filename ? state.filename + ' - miniCSV' : 'miniCSV');
   }
 
   function updateStats() {
@@ -1553,7 +1553,7 @@
       const blob = new Blob([offlineHtml], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'csv-editor.html';
+      a.href = url; a.download = 'minicsv.html';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } else {

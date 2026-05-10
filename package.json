@@ -1,8 +1,8 @@
 {
-  "name": "mathtalking-csv-editor-desktop",
+  "name": "minicsv-desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "Tauri desktop wrapper for the offline MathTalking CSV editor.",
+  "description": "Tauri desktop wrapper for the offline miniCSV editor.",
   "type": "module",
   "scripts": {
     "check:editor": "node scripts/check-editor.mjs",
