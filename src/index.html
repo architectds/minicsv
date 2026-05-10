@@ -483,6 +483,7 @@
     rows: [],
     filename: '',
     fileHandle: null,
+    sourceFile: null,
     encoding: 'utf-8',
     separator: ',',
     quote: '"',
@@ -524,6 +525,9 @@
       comma: 'Comma', semicolon: 'Semicolon', tab: 'Tab', pipe: 'Pipe',
       savePrompt: 'Save as:', returnUnavailable: 'No Stat page is connected to receive this data.',
       returned: 'Returned edited data to Stat.', row: 'row', rows: 'rows', column: 'column', columns: 'columns',
+      encodingReloaded: 'Re-read using the selected encoding.',
+      encodingSaveOnly: 'Encoding will be used when saving.',
+      encodingSaveOnlyDirty: 'Unsaved edits kept. Encoding will be used when saving; reopen the file to re-decode.',
     },
     zh: {
       pageTitle: 'CSV 编辑器', return: '返回', language: '语言',
@@ -756,7 +760,7 @@
     updateStats();
   }
 
-  function loadFromText(text, name = '', handle = null) {
+  function loadFromText(text, name = '', handle = null, sourceFile = null) {
     const result = Papa.parse(text, {
       delimiter: state.separator,
       quoteChar: state.quote || '"',
@@ -772,6 +776,7 @@
     if (state.rows.length === 0) state.rows = [['']];
     state.filename = name || state.filename || 'Untitled.csv';
     state.fileHandle = handle;
+    state.sourceFile = sourceFile;
     state.dirty = false;
     state.selectedCol = state.selectedRow = null;
     state.activeCol = state.activeRow = null;
@@ -780,10 +785,10 @@
     render();
   }
 
-  async function readTextFile(file) {
+  async function readTextFile(file, encodingOverride = null) {
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    let encoding = normalizeEncoding(state.encoding);
+    let encoding = normalizeEncoding(encodingOverride || state.encoding);
     if ((encoding === 'utf-8' || encoding === 'utf-8-bom') && bytes.length >= 2) {
       if (bytes[0] === 0xff && bytes[1] === 0xfe) encoding = 'utf-16le';
       else if (bytes[0] === 0xfe && bytes[1] === 0xff) encoding = 'utf-16be';
@@ -793,6 +798,29 @@
       return new TextDecoder(DECODER_LABELS[encoding] || 'utf-8').decode(buffer);
     } catch (error) {
       return new TextDecoder('utf-8').decode(buffer);
+    }
+  }
+
+  async function reloadCurrentWithEncoding(encoding) {
+    if (state.dirty) return false;
+    const nextEncoding = normalizeEncoding(encoding);
+
+    if (window.MTCsvDesktop?.reopenWithEncoding) {
+      return window.MTCsvDesktop.reopenWithEncoding(nextEncoding);
+    }
+
+    try {
+      const file = state.fileHandle?.getFile
+        ? await state.fileHandle.getFile()
+        : state.sourceFile;
+      if (!file) return false;
+      const text = await readTextFile(file, nextEncoding);
+      state.encoding = nextEncoding;
+      loadFromText(text, file.name || state.filename, state.fileHandle, file);
+      updateEncodingSelect();
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 
@@ -903,7 +931,7 @@
         });
         const file = await handle.getFile();
         const text = await readTextFile(file);
-        loadFromText(text, file.name, handle);
+        loadFromText(text, file.name, handle, file);
       } catch (e) {}
     } else {
       $('#file-input').click();
@@ -914,7 +942,7 @@
     const file = e.target.files[0];
     if (!file) return;
     const text = await readTextFile(file);
-    loadFromText(text, file.name, null);
+    loadFromText(text, file.name, null, file);
     e.target.value = '';
   });
 
@@ -935,7 +963,7 @@
     const file = e.dataTransfer.files[0];
     if (!file) return;
     const text = await readTextFile(file);
-    loadFromText(text, file.name, null);
+    loadFromText(text, file.name, null, file);
   });
 
   function buildCsv(format = 'csv') {
@@ -1365,6 +1393,10 @@
     $('#stats').textContent = `${rows} ${rows === 1 ? l10n('row') : l10n('rows')} × ${cols} ${cols === 1 ? l10n('column') : l10n('columns')}`;
   }
 
+  function setStatus(message) {
+    if (message) $('#stats').textContent = message;
+  }
+
   content.addEventListener('click', (e) => {
     if (e.target.matches('input.cell-edit')) return;
     const colHead = e.target.closest('.col-head');
@@ -1492,9 +1524,14 @@
     state.quote = e.target.dataset.v;
     setActive('#seg-quote', state.quote);
   });
-  $('#sel-encoding').addEventListener('change', (e) => {
-    state.encoding = normalizeEncoding(e.target.value);
+  $('#sel-encoding').addEventListener('change', async (e) => {
+    const nextEncoding = normalizeEncoding(e.target.value);
+    const hadUnsavedEdits = state.dirty;
+    state.encoding = nextEncoding;
     updateEncodingSelect();
+    const reloaded = await reloadCurrentWithEncoding(nextEncoding);
+    if (reloaded) setStatus(l10n('encodingReloaded'));
+    else setStatus(l10n(hadUnsavedEdits ? 'encodingSaveOnlyDirty' : 'encodingSaveOnly'));
   });
   $('#chk-header').addEventListener('change', (e) => {
     state.header = e.target.checked;
@@ -1569,7 +1606,7 @@
       updateTitle();
     },
     setStatus(message) {
-      if (message) $('#stats').textContent = message;
+      setStatus(message);
     },
     isDirty() {
       return !!state.dirty;

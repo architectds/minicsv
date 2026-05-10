@@ -17,6 +17,7 @@ const checks = [
   ['desktop save-as bridge', 'window.MTCsvDesktop?.saveAs'],
   ['encoding selector', 'id="sel-encoding"'],
   ['desktop encoding API', 'getEncoding()'],
+  ['encoding reload notice', 'encodingSaveOnlyDirty'],
   ['desktop bridge script', './desktop-bridge.js'],
   ['latest lazy cell editor', 'input.cell-edit'],
   ['latest stable cell ghost', 'cell-ghost'],
@@ -26,6 +27,7 @@ const checks = [
 
 const bridgeChecks = [
   ['native encoding bridge', 'encoding: currentEncoding()'],
+  ['desktop re-decode bridge', 'reopenWithEncoding'],
 ];
 
 const missing = checks.filter(([, marker]) => !html.includes(marker));

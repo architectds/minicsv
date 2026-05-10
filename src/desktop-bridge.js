@@ -50,6 +50,17 @@
       await loadRecord(record);
     },
 
+    async reopenWithEncoding(encoding) {
+      const api = editor();
+      if (!currentPath || api?.isDirty?.()) return false;
+      const record = await invoke('read_opened_file', {
+        url: currentPath,
+        encoding: encoding || currentEncoding()
+      });
+      await loadRecord(record);
+      return true;
+    },
+
     async save() {
       const api = editor();
       if (!api) return;
