@@ -28,7 +28,7 @@
     "category": "Utility",
     "shortDescription": "Offline CSV and TSV editor.",
     "longDescription": "MathTalking CSV Editor is a small offline editor for CSV and TSV files. Data stays on your device.",
-    "copyright": "Copyright © 2026 MathTalking",
+    "copyright": "Copyright (c) 2026 MathTalking",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
