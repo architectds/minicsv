@@ -35,8 +35,8 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --version 2.10.1 --locked
+      - name: Install npm dependencies
+        run: npm ci
 
       - name: Sync editor
         run: npm run sync
