@@ -7,6 +7,14 @@ const sourcePath = path.resolve(root, '..', 'mathtalking', 'csv-editor.html');
 const outputDir = path.join(root, 'src');
 const outputPath = path.join(outputDir, 'index.html');
 
+if (!fs.existsSync(sourcePath)) {
+  if (!fs.existsSync(outputPath)) {
+    throw new Error(`Missing ${sourcePath} and no committed ${outputPath} fallback exists.`);
+  }
+  console.log(`Source ${path.relative(root, sourcePath)} not found; using committed ${path.relative(root, outputPath)}.`);
+  process.exit(0);
+}
+
 const desktopApi = `
   window.MTCsvEditor = {
     loadText(text, name) {
