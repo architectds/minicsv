@@ -1,16 +1,15 @@
 # MathTalking CSV Editor Desktop
 
-Tauri 2 desktop wrapper for the offline `csv-editor.html` from MathTalking.
+Tauri 2 desktop app for the offline MathTalking CSV editor.
 
 ## Shape
 
-- Source of truth: `../mathtalking/csv-editor.html`
-- Desktop build asset: `src/index.html`
+- Source of truth: `src/index.html`
 - Native bridge: `src/desktop-bridge.js`
 - Bundle ID: `com.mathtalking.csveditor`
 - File associations: `.csv` and `.tsv`
 - macOS distribution target: Mac App Store
-- Windows/Linux distribution target: unsigned direct downloads
+- Windows/macOS/Linux distribution target: unsigned direct downloads
 
 ## Local Build
 
@@ -18,7 +17,6 @@ Use Node 18+; CI uses Node 22.
 
 ```powershell
 npm ci
-npm run sync
 npm run check
 npm run dev
 npm run build
@@ -26,6 +24,22 @@ npm run build
 
 On Windows, run the build from a Visual Studio x64 developer prompt if Cargo
 cannot find the MSVC linker libraries.
+
+`src/index.html` is intentionally checked in as this repo's standalone editor
+page. It was copied from the latest MathTalking `csv-editor.html` and includes
+the large-dataset virtual scrolling / lazy cell editing updates plus the native
+desktop bridge hooks.
+
+## Direct Download Builds
+
+`.github/workflows/release.yml` builds unsigned packages for:
+
+- Windows
+- macOS
+- Linux
+
+The macOS direct-download artifact is separate from the Mac App Store workflow
+below.
 
 ## Mac App Store Path
 

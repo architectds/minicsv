@@ -16,6 +16,8 @@ jobs:
         include:
           - platform: ubuntu-24.04
             args: ""
+          - platform: macos-15
+            args: "--target universal-apple-darwin --bundles dmg,app"
           - platform: windows-latest
             args: ""
     runs-on: ${{ matrix.platform }}
@@ -35,11 +37,15 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
+      - name: Add macOS universal targets
+        if: runner.os == 'macOS'
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Sync editor
-        run: npm run sync
+      - name: Check standalone editor
+        run: npm run check:editor
 
       - name: Build unsigned desktop package
         run: npm run build -- ${{ matrix.args }}
@@ -53,3 +59,7 @@ jobs:
             src-tauri/target/release/bundle/**/*.exe
             src-tauri/target/release/bundle/**/*.deb
             src-tauri/target/release/bundle/**/*.AppImage
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/macos/*.app/**
+            src-tauri/target/universal-apple-darwin/release/bundle/**/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app/**

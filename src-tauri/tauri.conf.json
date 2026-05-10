@@ -4,8 +4,6 @@
   "version": "0.1.0",
   "identifier": "com.mathtalking.csveditor",
   "build": {
-    "beforeBuildCommand": "node scripts/sync-editor.mjs",
-    "beforeDevCommand": "node scripts/sync-editor.mjs",
     "frontendDist": "../src"
   },
   "app": {
