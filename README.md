@@ -18,8 +18,11 @@ to rebuild fresh packages.
 
 - Source of truth: `src/index.html`
 - Native bridge: `src/desktop-bridge.js`
+- App icon source: `asset/app-icon.png` (cropped from `asset/logo.png`)
 - Bundle ID: `com.mathtalking.csveditor`
 - File associations: `.csv` and `.tsv`
+- File encodings: UTF-8, UTF-8 BOM, UTF-16 LE/BE, Windows-1252, GB18030,
+  Big5, Shift_JIS, EUC-KR
 - macOS distribution target: Mac App Store
 - Windows/macOS/Linux distribution target: unsigned direct downloads
 

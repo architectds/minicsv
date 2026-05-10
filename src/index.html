@@ -277,6 +277,17 @@
       flex: 0 0 auto;
     }
     .csv-statusbar label { display: inline-flex; align-items: center; gap: 6px; user-select: none; }
+    .csv-select {
+      height: 28px;
+      min-width: 168px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-2);
+      background: var(--bg-panel);
+      color: var(--ink-1);
+      font: inherit;
+      font-size: 12px;
+      padding: 0 28px 0 8px;
+    }
     .seg {
       display: inline-flex;
       border: 1px solid var(--border-strong);
@@ -423,6 +434,19 @@
   <div id="content" class="csv-content"></div>
 
   <div class="csv-statusbar" id="statusbar">
+    <label><span data-l10n="encoding">Encoding</span>
+      <select class="csv-select" id="sel-encoding" title="File encoding">
+        <option value="utf-8">Unicode (UTF-8)</option>
+        <option value="utf-8-bom">Unicode (UTF-8 BOM)</option>
+        <option value="utf-16le">Unicode (UTF-16 LE)</option>
+        <option value="utf-16be">Unicode (UTF-16 BE)</option>
+        <option value="windows-1252">Western (Windows-1252)</option>
+        <option value="gb18030">Chinese (GB18030)</option>
+        <option value="big5">Chinese Traditional (Big5)</option>
+        <option value="shift_jis">Japanese (Shift_JIS)</option>
+        <option value="euc-kr">Korean (EUC-KR)</option>
+      </select>
+    </label>
     <label><span data-l10n="separator">Separator</span>
       <div class="seg" id="seg-sep">
         <button data-v="," title="Comma">,</button>
@@ -459,6 +483,7 @@
     rows: [],
     filename: '',
     fileHandle: null,
+    encoding: 'utf-8',
     separator: ',',
     quote: '"',
     header: false,
@@ -489,7 +514,7 @@
       pageTitle: 'CSV Editor', return: 'Return', language: 'Language',
       open: 'Open', save: 'Save', saveAs: 'Save As', addColumn: 'Add Column',
       deleteColumn: 'Delete Column', addRow: 'Add Row', deleteRow: 'Delete Row',
-      export: 'Export', separator: 'Separator', quote: 'Quote', none: 'none',
+      export: 'Export', separator: 'Separator', quote: 'Quote', encoding: 'Encoding', none: 'none',
       headerRow: 'Header row', offline: '100% offline', drop: 'Drop CSV to open',
       exportCsv: 'Export as CSV', exportTsv: 'Export as TSV', exportJson: 'Export as JSON',
       downloadTitle: 'Download offline copy of this page', downloadAria: 'Download offline copy',
@@ -621,7 +646,58 @@
       returned: 'Dados editados retornados para Stat.', row: 'linha', rows: 'linhas', column: 'coluna', columns: 'colunas',
     },
   };
+  const ENCODINGS = new Set([
+    'utf-8',
+    'utf-8-bom',
+    'utf-16le',
+    'utf-16be',
+    'windows-1252',
+    'gb18030',
+    'big5',
+    'shift_jis',
+    'euc-kr',
+  ]);
+  const DECODER_LABELS = {
+    'utf-8': 'utf-8',
+    'utf-8-bom': 'utf-8',
+    'utf-16le': 'utf-16le',
+    'utf-16be': 'utf-16be',
+    'windows-1252': 'windows-1252',
+    gb18030: 'gb18030',
+    big5: 'big5',
+    shift_jis: 'shift_jis',
+    'euc-kr': 'euc-kr',
+  };
   let locale = detectLocale();
+
+  function normalizeEncoding(value) {
+    const key = String(value || 'utf-8').trim().toLowerCase().replace(/_/g, '-');
+    const aliases = {
+      utf8: 'utf-8',
+      'utf8-bom': 'utf-8-bom',
+      'utf-8-sig': 'utf-8-bom',
+      utf16le: 'utf-16le',
+      'utf-16-le': 'utf-16le',
+      utf16be: 'utf-16be',
+      'utf-16-be': 'utf-16be',
+      latin1: 'windows-1252',
+      'latin-1': 'windows-1252',
+      'iso-8859-1': 'windows-1252',
+      windows1252: 'windows-1252',
+      gbk: 'gb18030',
+      shiftjis: 'shift_jis',
+      'shift-jis': 'shift_jis',
+      sjis: 'shift_jis',
+      euckr: 'euc-kr',
+    };
+    const normalized = aliases[key] || key;
+    return ENCODINGS.has(normalized) ? normalized : 'utf-8';
+  }
+
+  function updateEncodingSelect() {
+    const select = $('#sel-encoding');
+    if (select) select.value = normalizeEncoding(state.encoding);
+  }
 
   function colLabel(i) {
     let s = '';
@@ -668,6 +744,7 @@
     setTitleAndAria('#downloadOffline', 'downloadTitle', 'downloadAria');
     setTitleAndAria('#themeToggle', 'themeTitle', 'themeAria');
     setTitleAndAria('#returnToStat', 'returnTitle', 'returnAria');
+    $('#sel-encoding').title = l10n('encoding');
     $('#btn-open').title = `${l10n('openTitle')} (${shortcut('O')})`;
     $('#btn-save').title = `${l10n('saveTitle')} (${shortcut('S')})`;
     $('#btn-saveas').title = `${l10n('saveAsTitle')} (${shortcut('Shift+S')})`;
@@ -701,6 +778,53 @@
     state.editing = null;
     content.scrollTop = 0;
     render();
+  }
+
+  async function readTextFile(file) {
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let encoding = normalizeEncoding(state.encoding);
+    if ((encoding === 'utf-8' || encoding === 'utf-8-bom') && bytes.length >= 2) {
+      if (bytes[0] === 0xff && bytes[1] === 0xfe) encoding = 'utf-16le';
+      else if (bytes[0] === 0xfe && bytes[1] === 0xff) encoding = 'utf-16be';
+      else if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) encoding = 'utf-8-bom';
+    }
+    try {
+      return new TextDecoder(DECODER_LABELS[encoding] || 'utf-8').decode(buffer);
+    } catch (error) {
+      return new TextDecoder('utf-8').decode(buffer);
+    }
+  }
+
+  function encodeUtf16(text, littleEndian) {
+    const bytes = [];
+    for (let i = 0; i < text.length; i++) {
+      const unit = text.charCodeAt(i);
+      if (littleEndian) {
+        bytes.push(unit & 0xff, unit >> 8);
+      } else {
+        bytes.push(unit >> 8, unit & 0xff);
+      }
+    }
+    return new Uint8Array(bytes);
+  }
+
+  function encodeTextForBrowser(text) {
+    const encoding = normalizeEncoding(state.encoding);
+    if (encoding === 'utf-8-bom') {
+      const body = new TextEncoder().encode(text);
+      const out = new Uint8Array(body.length + 3);
+      out.set([0xef, 0xbb, 0xbf], 0);
+      out.set(body, 3);
+      return { body: out, charset: 'utf-8' };
+    }
+    if (encoding === 'utf-16le') {
+      return { body: encodeUtf16(text, true), charset: 'utf-16le' };
+    }
+    if (encoding === 'utf-16be') {
+      return { body: encodeUtf16(text, false), charset: 'utf-16be' };
+    }
+    return { body: text, charset: 'utf-8' };
   }
 
   let importedDataLoaded = false;
@@ -778,7 +902,7 @@
           types: [{ description: 'CSV files', accept: { 'text/csv': ['.csv', '.tsv', '.txt'] } }],
         });
         const file = await handle.getFile();
-        const text = await file.text();
+        const text = await readTextFile(file);
         loadFromText(text, file.name, handle);
       } catch (e) {}
     } else {
@@ -789,7 +913,7 @@
   $('#file-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const text = await file.text();
+    const text = await readTextFile(file);
     loadFromText(text, file.name, null);
     e.target.value = '';
   });
@@ -810,7 +934,7 @@
     dragDepth = 0; document.body.classList.remove('dragging');
     const file = e.dataTransfer.files[0];
     if (!file) return;
-    const text = await file.text();
+    const text = await readTextFile(file);
     loadFromText(text, file.name, null);
   });
 
@@ -843,7 +967,7 @@
     if (state.fileHandle && 'createWritable' in state.fileHandle) {
       try {
         const w = await state.fileHandle.createWritable();
-        await w.write(text); await w.close();
+        await w.write(encodeTextForBrowser(text).body); await w.close();
         state.dirty = false; updateTitle();
         return;
       } catch (e) {}
@@ -861,7 +985,7 @@
           types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }],
         });
         const w = await handle.createWritable();
-        await w.write(text); await w.close();
+        await w.write(encodeTextForBrowser(text).body); await w.close();
         state.fileHandle = handle;
         state.filename = handle.name;
         state.dirty = false; updateTitle();
@@ -878,7 +1002,8 @@
   }
 
   function downloadBlob(text, name, mime) {
-    const blob = new Blob([text], { type: mime + ';charset=utf-8' });
+    const encoded = encodeTextForBrowser(text);
+    const blob = new Blob([encoded.body], { type: mime + ';charset=' + encoded.charset });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = name;
@@ -1081,6 +1206,7 @@
 
     updateTitle();
     updateStats();
+    updateEncodingSelect();
     setActive('#seg-sep', state.separator);
     setActive('#seg-quote', state.quote);
     $('#chk-header').checked = state.header;
@@ -1366,6 +1492,10 @@
     state.quote = e.target.dataset.v;
     setActive('#seg-quote', state.quote);
   });
+  $('#sel-encoding').addEventListener('change', (e) => {
+    state.encoding = normalizeEncoding(e.target.value);
+    updateEncodingSelect();
+  });
   $('#chk-header').addEventListener('change', (e) => {
     state.header = e.target.checked;
     render();
@@ -1413,13 +1543,22 @@
 
 
   window.MTCsvEditor = {
-    loadText(text, name) {
+    loadText(text, name, options = {}) {
+      if (options.encoding) state.encoding = normalizeEncoding(options.encoding);
       loadFromText(text || '', name || 'Untitled.csv', null);
       state.dirty = false;
+      updateEncodingSelect();
       updateTitle();
     },
     getText() {
       return buildCsv('csv');
+    },
+    getEncoding() {
+      return normalizeEncoding(state.encoding);
+    },
+    setEncoding(encoding) {
+      state.encoding = normalizeEncoding(encoding);
+      updateEncodingSelect();
     },
     getFilename() {
       return state.filename || 'untitled.csv';

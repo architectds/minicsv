@@ -10,6 +10,7 @@ rust-version = "1.77.2"
 tauri-build = { version = "2.6.1", features = [] }
 
 [dependencies]
+encoding_rs = "0.8"
 rfd = "0.17.2"
 serde = { version = "1", features = ["derive"] }
 tauri = { version = "2.11.1", features = [] }

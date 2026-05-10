@@ -14,12 +14,19 @@
     return String(filePath || '').split(/[\\/]/).pop() || 'untitled.csv';
   }
 
+  function currentEncoding() {
+    const api = editor();
+    return api?.getEncoding?.() || 'utf-8';
+  }
+
   async function loadRecord(record) {
     if (!record || typeof record.contents !== 'string') return;
     currentPath = record.path || '';
     const api = editor();
     if (api) {
-      api.loadText(record.contents, record.name || filenameFromPath(record.path));
+      api.loadText(record.contents, record.name || filenameFromPath(record.path), {
+        encoding: record.encoding || 'utf-8'
+      });
       api.setStatus(record.name ? `Opened ${record.name}` : 'Opened file');
     }
   }
@@ -28,7 +35,7 @@
     const list = Array.isArray(urls) ? urls : [];
     for (const url of list) {
       try {
-        const record = await invoke('read_opened_file', { url });
+        const record = await invoke('read_opened_file', { url, encoding: currentEncoding() });
         await loadRecord(record);
         return;
       } catch (error) {
@@ -39,7 +46,7 @@
 
   window.MTCsvDesktop = {
     async openFile() {
-      const record = await invoke('open_file_dialog');
+      const record = await invoke('open_file_dialog', { encoding: currentEncoding() });
       await loadRecord(record);
     },
 
@@ -52,9 +59,11 @@
       }
       const saved = await invoke('save_file', {
         path: currentPath,
-        contents: api.getText()
+        contents: api.getText(),
+        encoding: currentEncoding()
       });
       currentPath = saved.path || currentPath;
+      api.setEncoding?.(saved.encoding || currentEncoding());
       api.markSaved(saved.name || filenameFromPath(currentPath));
       api.setStatus(saved.name ? `Saved ${saved.name}` : 'Saved file');
     },
@@ -64,10 +73,12 @@
       if (!api) return;
       const saved = await invoke('save_file_dialog', {
         suggestedName: api.getFilename(),
-        contents: api.getText()
+        contents: api.getText(),
+        encoding: currentEncoding()
       });
       if (!saved) return;
       currentPath = saved.path || '';
+      api.setEncoding?.(saved.encoding || currentEncoding());
       api.markSaved(saved.name || filenameFromPath(currentPath));
       api.setStatus(saved.name ? `Saved ${saved.name}` : 'Saved file');
     }
