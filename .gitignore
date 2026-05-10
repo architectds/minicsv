@@ -1,0 +1,10 @@
+node_modules/
+src-tauri/gen/
+src-tauri/target/
+src-tauri/Entitlements.plist
+src-tauri/embedded.provisionprofile
+src-tauri/*.pkg
+src-tauri/*.p12
+src-tauri/*.cer
+.DS_Store
+*.log

@@ -1,0 +1,11 @@
+id,name,category,price,stock,in_stock,note
+1,MacBook Pro 14,Laptop,1999.00,12,true,"M3 chip, 16GB"
+2,iPhone 15,Phone,799.00,48,true,
+3,AirPods Pro,Audio,249.00,0,false,"Out of stock, ETA 2026-05-20"
+4,iPad Air,Tablet,599.00,7,true,"11"" display"
+5,Apple Watch S9,Wearable,399.00,23,true,
+6,Magic Mouse,Accessory,99.00,15,true,"Wireless, white"
+7,Studio Display,Monitor,1599.00,3,true,"27"" 5K"
+8,HomePod mini,Speaker,99.00,0,false,
+9,Pencil (2nd gen),Accessory,129.00,31,true,
+10,Mac mini,Desktop,599.00,9,true,"M2, 8GB/256GB"

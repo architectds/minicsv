@@ -1,0 +1,14 @@
+{
+  "name": "mathtalking-csv-editor-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tauri desktop wrapper for the offline MathTalking CSV editor.",
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-editor.mjs",
+    "dev": "npm run sync && cargo tauri dev",
+    "build": "npm run sync && cargo tauri build",
+    "build:mas": "npm run sync && cargo tauri build --config src-tauri/tauri.mas.conf.json --bundles app --target universal-apple-darwin",
+    "check": "npm run sync && cargo check --manifest-path src-tauri/Cargo.toml"
+  }
+}

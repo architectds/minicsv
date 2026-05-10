@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MathTalking CSV Editor",
+  "version": "0.1.0",
+  "identifier": "com.mathtalking.csveditor",
+  "build": {
+    "beforeBuildCommand": "node scripts/sync-editor.mjs",
+    "beforeDevCommand": "node scripts/sync-editor.mjs",
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "MathTalking CSV Editor",
+        "width": 1180,
+        "height": 760,
+        "minWidth": 900,
+        "minHeight": 620,
+        "resizable": true,
+        "center": true
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Utility",
+    "shortDescription": "Offline CSV and TSV editor.",
+    "longDescription": "MathTalking CSV Editor is a small offline editor for CSV and TSV files. Data stays on your device.",
+    "copyright": "Copyright © 2026 MathTalking",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["csv"],
+        "name": "Comma-Separated Values",
+        "mimeType": "text/csv",
+        "role": "Editor",
+        "rank": "Alternate",
+        "contentTypes": ["public.comma-separated-values-text"]
+      },
+      {
+        "ext": ["tsv"],
+        "name": "Tab-Separated Values",
+        "mimeType": "text/tab-separated-values",
+        "role": "Editor",
+        "rank": "Alternate",
+        "contentTypes": ["public.tab-separated-values-text"]
+      }
+    ],
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    }
+  }
+}
