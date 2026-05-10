@@ -3,6 +3,8 @@ name: Desktop Release Builds
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
