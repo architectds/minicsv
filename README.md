@@ -6,11 +6,11 @@ Tauri 2 desktop app for the offline miniCSV editor.
 
 Current unsigned builds from the latest successful GitHub Actions run:
 
-- [macOS universal DMG / app artifact](https://github.com/architectds/minicsv/actions/runs/25643004583/artifacts/6907950175)
-- [Windows installer artifact](https://github.com/architectds/minicsv/actions/runs/25643004583/artifacts/6907971599)
-- [Linux AppImage / deb artifact](https://github.com/architectds/minicsv/actions/runs/25643004583/artifacts/6907965039)
+- [macOS universal DMG / app artifact](https://github.com/architectds/minicsv/actions/runs/25644053287/artifacts/6908276154)
+- [Windows installer artifact](https://github.com/architectds/minicsv/actions/runs/25644053287/artifacts/6908298149)
+- [Linux AppImage / deb artifact](https://github.com/architectds/minicsv/actions/runs/25644053287/artifacts/6908292075)
 
-These are GitHub Actions artifacts from commit `4ee7346`; GitHub expires them
+These are GitHub Actions artifacts from commit `3d2259d`; GitHub expires them
 after the artifact retention window. Use the `Desktop Release Builds` workflow
 to rebuild fresh packages.
 
