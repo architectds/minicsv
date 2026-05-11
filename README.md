@@ -19,7 +19,8 @@ to rebuild fresh packages.
 - Source of truth: `src/index.html`
 - Native bridge: `src/desktop-bridge.js`
 - App icon source: `asset/app-icon.png` (cropped from `asset/logo.png`)
-- Bundle ID: `com.architectds.minicsv`
+- Publisher / signing owner: `Lyncius LLC`
+- Bundle ID: `com.lyncius.minicsv`
 - File associations: `.csv` and `.tsv`
 - File encodings: UTF-8, UTF-8 BOM, UTF-16 LE/BE, Windows-1252, GB18030,
   Big5, Shift_JIS, EUC-KR
@@ -79,13 +80,17 @@ The workflow generates `src-tauri/Entitlements.plist`, embeds
 `src-tauri/embedded.provisionprofile`, builds a universal macOS app, wraps it
 as a signed `.pkg`, and uploads it to App Store Connect.
 
+Use Apple certificates, provisioning profiles, and App Store Connect API keys
+from the Lyncius LLC Apple Developer team. The signing identities should appear
+as Apple Distribution / Mac Installer Distribution identities for Lyncius LLC.
+
 ## Apple Portal Checklist
 
-1. Create App ID `com.architectds.minicsv`.
+1. Create App ID `com.lyncius.minicsv` under the Lyncius LLC Apple Developer team.
 2. Enable App Sandbox.
 3. Create a Mac App Store Connect provisioning profile for that App ID.
-4. Export an Apple Distribution or 3rd Party Mac Developer Application `.p12`.
-5. Export a Mac Installer Distribution or 3rd Party Mac Developer Installer `.p12`.
+4. Export an Apple Distribution or 3rd Party Mac Developer Application `.p12` for Lyncius LLC.
+5. Export a Mac Installer Distribution or 3rd Party Mac Developer Installer `.p12` for Lyncius LLC.
 6. Create an App Store Connect API key with app upload access.
 7. Add the secrets above to the GitHub repo.
 8. Run the `Mac App Store Upload` workflow.

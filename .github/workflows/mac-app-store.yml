@@ -36,7 +36,7 @@ jobs:
             <key>com.apple.security.files.user-selected.read-write</key>
             <true/>
             <key>com.apple.application-identifier</key>
-            <string>${APPLE_TEAM_ID}.com.mathtalking.csveditor</string>
+            <string>${APPLE_TEAM_ID}.com.lyncius.minicsv</string>
             <key>com.apple.developer.team-identifier</key>
             <string>${APPLE_TEAM_ID}</string>
           </dict>
@@ -80,9 +80,9 @@ jobs:
         run: |
           xcrun productbuild \
             --sign "$APPLE_INSTALLER_SIGNING_IDENTITY" \
-            --component "src-tauri/target/universal-apple-darwin/release/bundle/macos/MathTalking CSV Editor.app" \
+            --component "src-tauri/target/universal-apple-darwin/release/bundle/macos/miniCSV.app" \
             /Applications \
-            "MathTalking CSV Editor.pkg"
+            "miniCSV.pkg"
         env:
           APPLE_INSTALLER_SIGNING_IDENTITY: ${{ secrets.APPLE_INSTALLER_SIGNING_IDENTITY }}
 
@@ -98,7 +98,7 @@ jobs:
         run: |
           xcrun altool --upload-app \
             --type macos \
-            --file "MathTalking CSV Editor.pkg" \
+            --file "miniCSV.pkg" \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
         env:

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Tauri desktop wrapper for the offline miniCSV editor.",
+  "author": "Lyncius LLC",
   "type": "module",
   "scripts": {
     "check:editor": "node scripts/check-editor.mjs",
